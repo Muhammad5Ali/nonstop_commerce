@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import myContext from "../../context/myContext";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { auth, fireDB } from "../../firebase/FirebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader/Loader";
 
@@ -73,26 +73,27 @@ const Signup = () => {
 
         setLoading(true);
         try {
-            const users = await createUserWithEmailAndPassword(auth, userSignup.email, userSignup.password);
+            const userCredential = await createUserWithEmailAndPassword(auth, userSignup.email, userSignup.password);
+            const user = userCredential.user;
 
-            const user = {
+            await sendEmailVerification(user);
+            toast.success("Verification email sent. Please check your email.");
+
+            const userData = {
                 name: userSignup.name,
-                email: users.user.email,
-                uid: users.user.uid,
+                email: user.email,
+                uid: user.uid,
                 role: userSignup.role,
                 time: Timestamp.now(),
-                date: new Date().toLocaleString(
-                    "en-US",
-                    {
-                        month: "short",
-                        day: "2-digit",
-                        year: "numeric",
-                    }
-                )
+                date: new Date().toLocaleString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                })
             };
 
             const userReference = collection(fireDB, "user");
-            await addDoc(userReference, user);
+            await addDoc(userReference, userData);
 
             setUserSignup({
                 name: "",
@@ -101,10 +102,8 @@ const Signup = () => {
                 role: "user"
             });
 
-            toast.success("Signup Successfully");
-
             setLoading(false);
-            navigate('/login');
+            navigate('/verify-email');
         } catch (error) {
             console.log(error);
             toast.error("Signup Failed");

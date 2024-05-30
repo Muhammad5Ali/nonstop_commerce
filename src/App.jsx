@@ -20,6 +20,7 @@ import { Toaster } from "react-hot-toast";
 import { ProtectedRouteForUser } from "./protectedRoute/ProtectedRouteForUser";
 import { ProtectedRouteForAdmin } from "./protectedRoute/ProtectedRouteForAdmin";
 import CategoryPage from "./pages/category/CategoryPage";
+import VerifyEmail from './pages/registration/VerifyEmail';
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/allproduct" element={<AllProduct />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/category/:categoryname" element={<CategoryPage />} />  {/* category Page route  */}
           <Route path="/user-dashboard" element={
@@ -61,5 +63,7 @@ const App = () => {
     </MyState>
   );
 }
+
+
 
 export default App;
